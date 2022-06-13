@@ -22,7 +22,6 @@ function Toggleable({ children, buttonLabel }, refs) {
         {buttonLabel}
       </button>
       <div style={{ display: isVisible ? "block" : "none" }}>
-        <h2>create new</h2>
         <>{children}</>
         <button onClick={toggleVisibility}>cancel</button>
       </div>

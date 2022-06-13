@@ -59,8 +59,6 @@ const App = () => {
     setUser(null);
   };
 
-  
-
   const addBlog = async (newBlog) => {
     try {
       const savedBlog = await blogService.create(newBlog);
@@ -68,6 +66,17 @@ const App = () => {
       console.log(savedBlog);
       setBlogs([...blogs, savedBlog]);
       createNotification("success", `a new blog ${savedBlog.title} added`);
+    } catch (exception) {
+      console.log(exception.response.data.error);
+      createNotification("error", exception.response.data.error);
+    }
+  };
+
+  const likeBlog = async (id, blogUpdate) => {
+    try {
+      const updatedBlog = await blogService.update(id, blogUpdate);
+      const blogsFilter = blogs.filter((blog) => blog.id !== updatedBlog.id);
+      setBlogs([...blogsFilter, updatedBlog]);
     } catch (exception) {
       console.log(exception.response.data.error);
       createNotification("error", exception.response.data.error);
@@ -99,7 +108,7 @@ const App = () => {
       </Toggleable>
 
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} likeBlog={likeBlog} />
       ))}
     </div>
   );

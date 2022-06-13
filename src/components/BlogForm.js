@@ -1,16 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 
-function BlogForm({
-  title,
-  author,
-  url,
-  setTitle,
-  setAuthor,
-  setUrl,
-  onSubmit,
-}) {
+function BlogForm({ addBlog }) {
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [url, setUrl] = useState("");
+
+  const handleBlogPost = async (e) => {
+    e.preventDefault();
+    const newBlog = { title, author, url };
+    await addBlog(newBlog);
+
+    setTitle("");
+    setAuthor("");
+    setUrl("");
+  };
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={handleBlogPost}>
       <label htmlFor="title">title: </label>
       <input
         onChange={(e) => setTitle(e.target.value)}

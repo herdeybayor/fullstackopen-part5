@@ -13,9 +13,6 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [notification, setNotification] = useState(null);
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
   const blogFormRef = useRef();
 
   useEffect(() => {
@@ -62,18 +59,15 @@ const App = () => {
     setUser(null);
   };
 
-  const handleBlogPost = async (e) => {
-    e.preventDefault();
+  
+
+  const addBlog = async (newBlog) => {
     try {
-      const newBlog = { title, author, url };
       const savedBlog = await blogService.create(newBlog);
       blogFormRef.current.toggleVisibility();
       console.log(savedBlog);
       setBlogs([...blogs, savedBlog]);
       createNotification("success", `a new blog ${savedBlog.title} added`);
-      setTitle("");
-      setAuthor("");
-      setUrl("");
     } catch (exception) {
       console.log(exception.response.data.error);
       createNotification("error", exception.response.data.error);
@@ -101,15 +95,7 @@ const App = () => {
       </p>
 
       <Toggleable buttonLabel="new blog" ref={blogFormRef}>
-        <BlogForm
-          onSubmit={handleBlogPost}
-          title={title}
-          author={author}
-          url={url}
-          setTitle={setTitle}
-          setAuthor={setAuthor}
-          setUrl={setUrl}
-        />
+        <BlogForm addBlog={addBlog} />
       </Toggleable>
 
       {blogs.map((blog) => (

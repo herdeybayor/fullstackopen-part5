@@ -14,7 +14,14 @@ function Notification({ notification: { message, type } }) {
     fontWeight: "medium",
   };
   return (
-    <div>
+    <div
+      style={{
+        position: "fixed",
+        top: 5,
+        left: "50%",
+        transform: "translateX(-50%)",
+      }}
+    >
       <p style={notificationStyle}>{message}</p>
     </div>
   );

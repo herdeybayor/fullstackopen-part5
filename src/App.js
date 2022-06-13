@@ -52,19 +52,32 @@ const App = () => {
     }
   };
 
-  const handleLogout = (e) => {
-    e.preventDefault();
+  const resetUser = () => {
     window.localStorage.removeItem("user");
     blogService.setToken(null);
     setUser(null);
+  };
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    resetUser();
   };
 
   const addBlog = async (newBlog) => {
     try {
       const savedBlog = await blogService.create(newBlog);
       blogFormRef.current.toggleVisibility();
-      console.log(savedBlog);
-      setBlogs([...blogs, savedBlog]);
+      const newBlogWithUser = {
+        ...savedBlog,
+        user: {
+          username: user.username,
+          name: user.name,
+          id: savedBlog.user,
+        },
+        likes: savedBlog.likes,
+      };
+      console.log(newBlogWithUser);
+      setBlogs([...blogs, newBlogWithUser]);
       createNotification("success", `a new blog ${savedBlog.title} added`);
     } catch (exception) {
       console.log(exception.response.data.error);
@@ -76,10 +89,29 @@ const App = () => {
     try {
       const updatedBlog = await blogService.update(id, blogUpdate);
       const blogsFilter = blogs.filter((blog) => blog.id !== updatedBlog.id);
-      setBlogs([...blogsFilter, updatedBlog]);
+      const oldBlog = blogs.find((blog) => blog.id === updatedBlog.id);
+      setBlogs([...blogsFilter, { ...oldBlog, likes: updatedBlog.likes }]);
     } catch (exception) {
       console.log(exception.response.data.error);
       createNotification("error", exception.response.data.error);
+    }
+  };
+
+  const removeBlog = async (id) => {
+    try {
+      const blog = blogs.find((blog) => blog.id === id);
+      await blogService.remove(id);
+      const blogsFilter = blogs.filter((blog) => blog.id !== id);
+      setBlogs(blogsFilter);
+      createNotification("success", `${blog.title} by ${blog.title} removed`);
+    } catch (exception) {
+      if (exception.response.status === 401) {
+        console.log(exception);
+        createNotification("error", exception.response.data.error);
+      } else {
+        console.log(exception);
+        createNotification("error", exception.response.data.error);
+      }
     }
   };
 
@@ -108,7 +140,15 @@ const App = () => {
       </Toggleable>
 
       {blogs
-        .map((blog) => <Blog key={blog.id} blog={blog} likeBlog={likeBlog} />)
+        .map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            likeBlog={likeBlog}
+            removeBlog={removeBlog}
+            user={user}
+          />
+        ))
         .sort((a, b) => b.props.blog.likes - a.props.blog.likes)}
     </div>
   );

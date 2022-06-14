@@ -36,7 +36,7 @@ const Blog = ({
 
   return (
     <div style={blogStyle}>
-      <p>
+      <p id="blog-title">
         {title}{" "}
         <button onClick={toggleVisibility}>
           {isVisible ? "hide" : "view"}
@@ -44,11 +44,11 @@ const Blog = ({
       </p>
       {isVisible && (
         <>
-          <p>{url}</p>
-          <p>
+          <p id="blog-url">{url}</p>
+          <p id="blog-likes">
             likes {likes} <button onClick={handleBlogLike}>like</button>
           </p>
-          <p>{author}</p>
+          <p id="blog-author">{author}</p>
           {loggedUser.username === user.username && (
             <button onClick={handleBlogRemove}>remove</button>
           )}

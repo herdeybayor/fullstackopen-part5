@@ -18,9 +18,12 @@ describe("displaying a blog", () => {
   const user = {
     username: "test_user",
   };
+  const likeBlogHandler = jest.fn();
 
   beforeEach(() => {
-    container = render(<Blog blog={blog} user={user} />).container;
+    container = render(
+      <Blog blog={blog} user={user} likeBlog={likeBlogHandler} />
+    ).container;
   });
 
   test("render title, but not author, url and likes by default", () => {
@@ -43,5 +46,17 @@ describe("displaying a blog", () => {
     screen.getByText("John Wick");
     screen.getByText("https://google.com");
     screen.getByText("20", { exact: false });
+  });
+
+  test("clicking like button twice trigger event function twice", async () => {
+    const user = userEvent.setup();
+    const viewButton = screen.getByText("view");
+    await user.click(viewButton);
+
+    const likeButton = screen.getByText("like");
+    await user.click(likeButton);
+    await user.click(likeButton);
+
+    expect(likeBlogHandler.mock.calls).toHaveLength(2);
   });
 });

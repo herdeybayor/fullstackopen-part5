@@ -56,25 +56,70 @@ describe("Blog app", function () {
       cy.contains("new blog title");
     });
 
-    describe("and a blog exists", function () {
+    describe("and multiple blogs exists", function () {
       beforeEach(function () {
         cy.createBlog({
           title: "an existing blog",
           author: "Elon Musk",
           url: "https://twitter.com",
         });
+        cy.createBlog({
+          title: "another blog",
+          author: "Elon Musk",
+          url: "https://twitter.com",
+        });
+        cy.createBlog({
+          title: "yet another blog",
+          author: "Elon Musk",
+          url: "https://twitter.com",
+        });
       });
 
-      it.only("a user can like blog", function () {
-        cy.contains("an existing blog")
-          .contains("view")
-          .as("viewButton")
-          .click();
+      it("a user can like blog", function () {
+        cy.contains("another blog").contains("view").as("viewButton");
+        cy.get("@viewButton").click();
 
-        cy.get("#blog-likes").contains("like").as("likeButton");
+        cy.get("@viewButton")
+          .parent()
+          .parent()
+          .contains("like")
+          .as("likeButton");
         cy.get("@likeButton").click();
 
         cy.get("#blog-likes").contains("likes 1");
+      });
+
+      describe("deleting a blog", function () {
+        it("succeeds if creator clicks remove button", function () {
+          cy.contains("yet another blog").contains("view").as("viewButton");
+          cy.get("@viewButton").click();
+
+          cy.get("@viewButton")
+            .parent()
+            .parent()
+            .contains("remove")
+            .as("removeButton");
+          cy.get("@removeButton").click();
+        });
+
+        it("should not be possible if trying to delete another user's blog", function () {
+          cy.contains("logout").click();
+          cy.createUser({
+            name: "Elon Musk",
+            username: "musk",
+            password: "test",
+          });
+
+          cy.login({ username: "musk", password: "test" });
+
+          cy.contains("an existing blog").contains("view").as("viewButton");
+          cy.get("@viewButton").click();
+
+          cy.get("@viewButton")
+            .parent()
+            .parent()
+            .should("not.contain", "remove");
+        });
       });
     });
   });

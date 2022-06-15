@@ -38,4 +38,44 @@ describe("Blog app", function () {
       cy.get("html").should("not.contain", "Sherifdeen Adebayo logged in");
     });
   });
+
+  describe("When logged in", function () {
+    beforeEach(function () {
+      cy.login({ username: "herdeybayor", password: "test" });
+    });
+
+    it("A blog can be created", function () {
+      cy.get("#new-blog").click();
+
+      cy.get("#title").type("new blog title");
+      cy.get("#author").type("the author");
+      cy.get("#url").type("https://google.com");
+
+      cy.get("#createBlog").click();
+
+      cy.contains("new blog title");
+    });
+
+    describe("and a blog exists", function () {
+      beforeEach(function () {
+        cy.createBlog({
+          title: "an existing blog",
+          author: "Elon Musk",
+          url: "https://twitter.com",
+        });
+      });
+
+      it.only("a user can like blog", function () {
+        cy.contains("an existing blog")
+          .contains("view")
+          .as("viewButton")
+          .click();
+
+        cy.get("#blog-likes").contains("like").as("likeButton");
+        cy.get("@likeButton").click();
+
+        cy.get("#blog-likes").contains("likes 1");
+      });
+    });
+  });
 });

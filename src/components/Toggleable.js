@@ -19,6 +19,7 @@ const Toggleable = React.forwardRef(({ children, buttonLabel }, refs) => {
       <button
         style={{ display: isVisible ? "none" : "block" }}
         onClick={toggleVisibility}
+        id={`${buttonLabel.toLowerCase().split(" ").join("-")}`}
       >
         {buttonLabel}
       </button>

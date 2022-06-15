@@ -45,7 +45,9 @@ function BlogForm({ addBlog }) {
           required
         />
         <br />
-        <button type="submit">create</button>
+        <button id="createBlog" type="submit">
+          create
+        </button>
       </form>
     </div>
   );

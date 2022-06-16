@@ -56,3 +56,12 @@ Cypress.Commands.add("createUser", ({ username, name, password }) => {
     cy.visit("http://localhost:3000");
   });
 });
+
+Cypress.Commands.add("likeBlog", (blogTitle) => {
+  cy.contains(blogTitle).contains("view").as("viewButton");
+  cy.get("@viewButton").click();
+
+  cy.get("@viewButton").parent().parent().contains("like").as("likeButton");
+  cy.get("@likeButton").click();
+  cy.contains(blogTitle).contains("hide").click();
+});

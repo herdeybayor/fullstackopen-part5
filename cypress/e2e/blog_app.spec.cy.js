@@ -121,6 +121,25 @@ describe("Blog app", function () {
             .should("not.contain", "remove");
         });
       });
+
+      it.only("blogs are ordered by likes", async function () {
+        cy.get("html");
+        cy.likeBlog("another blog");
+        cy.likeBlog("yet another blog");
+        cy.likeBlog("another blog");
+        cy.likeBlog("an existing blog");
+        cy.likeBlog("yet another blog");
+        cy.likeBlog("another blog");
+        cy.get(".blog");
+        cy.get(".blog").each(() => {
+          cy.contains("view").as("viewButton");
+          cy.get("@viewButton").click();
+        });
+
+        cy.get(".blog").eq(2).should("contain", "likes 1");
+        cy.get(".blog").eq(0).should("contain", "likes 5");
+        cy.get(".blog").eq(1).should("contain", "likes 2");
+      });
     });
   });
 });
